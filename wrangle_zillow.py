@@ -1,6 +1,6 @@
 import env
 import os
-
+from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
 
@@ -119,3 +119,24 @@ def null_dropper(df,prop_required_column,prop_requred_row):
     df.dropna(axis = 0, thresh=row_threshold, inplace = True)
     
     return df
+########################## county/fips######################
+def rename_county(df):
+    # 6111 Ventura County, 6059  Orange County, 6037 Los Angeles County 
+    df = df.rename(columns={6111.0: 'ventura_county',6059.0: 'orange_county',
+            6037: 'los_angeles_county'}) 
+    return df
+############################# split data #########################
+def split_data(df):
+    '''
+    split_data takes in data Frame and splits into  train , validate, test.
+    The split is 20% test 80% train/validate. Then 30% of 80% validate and 70% of 80% train.
+    Aproximately (train 56%, validate 24%, test 20%)
+    Returns train, validate, and test 
+    '''
+    # split test data from train/validate
+    train_and_validate, test = train_test_split(df, random_state=123, test_size=.2)
+
+    # split train from validate
+    train, validate = train_test_split(train_and_validate, random_state=123, test_size=.3)
+                                   
+    return train, validate, test
